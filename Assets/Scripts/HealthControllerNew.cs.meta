@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 940b91bed6f066c4c99df8f3292335d2
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - deathSound: {fileID: 8300000, guid: 9e099ba48f732e1479154849dc40f0dd, type: 3}
+  - gameOverSound: {fileID: 8300000, guid: 1e13fd87d4dbc2d4ebc4a4364509592c, type: 3}
+  - criticalHealthSound: {fileID: 8300000, guid: 9be3292659b43734a98d081b52bb513f,
+      type: 3}
+  - lbl_life: {instanceID: 0}
+  - deathPrefabRight: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
