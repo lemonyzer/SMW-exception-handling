@@ -18,9 +18,14 @@ function OnGUI() {
 		Application.LoadLevel("mp_StarTrooper");
 	}
 	
-	if(GUI.Button(new Rect((Screen.width/2)-100,(Screen.height/2)+80,200,50),"UDP Connection"))
+	if(GUI.Button(new Rect((Screen.width/2)-100,(Screen.height/2)+80,200,50),"Touch Test"))
 	{
-		Application.LoadLevel("mp_UDPServer");
+		Application.LoadLevel("touchtest");
+	}
+	
+		if(GUI.Button(new Rect((Screen.width/2)-100,(Screen.height/2)+140,200,50),"Photon Network"))
+	{
+		Application.LoadLevel("pun_classic");
 	}
 	
 }

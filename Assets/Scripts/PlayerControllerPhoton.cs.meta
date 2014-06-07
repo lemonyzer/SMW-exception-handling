@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 41e4372cca0aad748859aad9e6d85318
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - jumpSound: {fileID: 8300000, guid: 3f403ecda2292db409e37dbcb49fdcf7, type: 3}
+  - changeRunDirectionSound: {fileID: 8300000, guid: 24cfdab8784fd7547aa9a28818163535,
+      type: 3}
+  - wallJumpSound: {fileID: 8300000, guid: f3f05254000bb9445a6380cc2970f730, type: 3}
+  - groundCheck: {instanceID: 0}
+  - wallCheck: {instanceID: 0}
+  - buttonA: {instanceID: 0}
+  - buttonB: {instanceID: 0}
+  - leftStick: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 

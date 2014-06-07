@@ -1,7 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
+
+//	public bool debug=true;
+//	GUIText guitext;
+//	GUIText guitext2;
 
 	public bool isDead = false;
 	public bool JumpAllowed=true;
@@ -19,7 +23,7 @@ public class PlayerController : MonoBehaviour {
 	float velocity = 0;
 	public bool inputJump = false;
 	public bool inputMove = false;
-	bool facingRight = true;
+	public bool facingRight = true;
 
 	Animator anim;
 
@@ -27,8 +31,6 @@ public class PlayerController : MonoBehaviour {
 	public bool walled = false;
 	public Vector2 groundCheckPosition = new Vector2(0, -0.5f);
 	public Vector2 wallCheckPosition = new Vector2(0.5f, 0);
-	public Transform groundCheck;
-	public Transform wallCheck;
 	float groundRadius = 0.2f;
 	float wallRadius = 0.1f;
 	public LayerMask whatIsGround;
@@ -36,35 +38,60 @@ public class PlayerController : MonoBehaviour {
 
 
 	/* Android */
-	public Touch myTouch;
-	float deltaX=0;
 	/* Input */
 	bool inputTouchJump;
-	public float rangeX = Screen.width/2/2;	//Pixelbreite  Bildschirmauflösung/2 /2
 	bool buttonIsPressed = false;
+	int buttonTouchID=-1;
+	int buttonTapCount=0;
 	bool stickIsPressed = false;
 	/* / Input */
-	//float deltaY=0;
-	public Button buttonA;
-	public Button buttonB;
-	public AnalogStick leftStick;
+
+//	public Button buttonA;
+//	public Button buttonB;
+//	public AnalogStick leftStick;
+
+	Touch analogStick;
+	int analogStickTouchID=-1;
+	bool analogStickTouchBegan=false;
+
+	float touchBeganPositionX;
+	float touchBeganPositionY;
+	float deltaX=0;
+	float deltaY=0;
+
+	public GUITexture analogStickTexture;
+	public GUITexture stickTexture;
+	public float analogStickTextureWidth=0;
+	public float analogStickTextureHeight=0;
+
+	float textureSizeWithSaveZoneX;
+	float textureSizeWithSaveZoneY;
 	/* / Android */
 	
-
-
-	// Use this for initialization
-	void Start () {
-		//characterController = GetComponent<CharacterController>();	//aktuelle Componente des Gameobjects zuweisen 
+	void Start() {
 		anim = GetComponent<Animator>();
+		analogStickTexture = (GUITexture) Instantiate(analogStickTexture);
+		stickTexture = (GUITexture) Instantiate(stickTexture);
+		analogStickTextureWidth = analogStickTexture.pixelInset.width;
+		analogStickTextureHeight = analogStickTexture.pixelInset.height;
+	}
+
+	void Awake()
+	{
+
+
 	}
 
 	void Update() {
-		if(!isDead)
-		{
-			InputCheck ();
-			InputTouchCheck ();	
-			JumpAblePlatform();
-		}
+
+		InputCheck ();
+		InputTouchCheck ();	
+		JumpAblePlatform();
+//		if(!isDead)
+//		{
+//			deltaX=0f;
+//			deltaY=0f;
+//		}
 
 	}
 	void InputCheck()
@@ -99,35 +126,65 @@ public class PlayerController : MonoBehaviour {
 	{
 		buttonIsPressed=false;
 		stickIsPressed=false;
-		foreach(Touch touch in Input.touches)
-		{
-			if(!buttonIsPressed)
-			{
-				//noch kein Finger in linker Bildschirmhälfte gefunden
-				if( touch.position.x > (Screen.width * 0.5) )
-				{
-					buttonIsPressed = true;
-				}
-			}
-			if(!stickIsPressed)
-			{
-				//noch kein Finger in linker Bildschirmhälfte gefunden
-				if( touch.position.x < (Screen.width * 0.5) )
-				{
-					deltaX += touch.deltaPosition.x/rangeX;
-					if(deltaX > 1.0f)
-						deltaX = 1.0f;
-					else if(deltaX < -1.0f)
-						deltaX = -1.0f;
-					
-					stickIsPressed = true;
-				}
-			}
-		}
+
+		AnalogStickAndButton();
+		stickIsPressed = analogStickTouchBegan;
+
 		if(!stickIsPressed) {
 			deltaX = 0.0F;
 		}
 		inputTouchJump=buttonIsPressed;
+
+//		foreach(Touch touch in Input.touches)
+//		{
+//			if(!buttonIsPressed)
+//			{
+//				//noch kein Finger in linker Bildschirmhälfte gefunden
+//				if( touch.position.x > (Screen.width * 0.5f) )
+//				{
+//					buttonIsPressed = true;
+//				}
+//			}
+//			if(!stickIsPressed)
+//			{
+//				switch (touch.phase) 
+//				{
+//					case TouchPhase.Began:
+//					if(touch.position.x < (Screen.width * 0.5f))
+//					{
+//						if(touch.position.x > (Screen.width * 0.125f))
+//						{
+//							touchBeganPositionX = touch.position.x;
+//							touchBeganPositionY = touch.position.y;
+//						}
+//						else
+//						{
+//							//zu nah am Rand, OFFSET!
+//							touchBeganPositionX = Screen.width*0.125f;
+//							touchBeganPositionY = touch.position.y;
+//						}
+//							
+//						stickIsPressed = true;
+//					}
+//					break;
+//
+//					case TouchPhase.Moved:
+//					deltaX = (touch.position.x - touchBeganPositionX)/rangeX;
+//					if(deltaX > 1.0f)
+//						deltaX = 1.0f;
+//					else if(deltaX < -1.0f)
+//						deltaX = -1.0f;
+//					break;
+//
+//					case TouchPhase.Stationary:
+//						break;
+//					case TouchPhase.Ended:
+//					stickIsPressed = false;
+//						break;
+//
+//				}
+//			}
+//		}
 
 //		if(Input.touchCount > 0)
 //		{
@@ -325,18 +382,223 @@ public class PlayerController : MonoBehaviour {
 	{
 		if(rigidbody2D.velocity.y >0.0F)
 		{
-			Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("JumpAblePlatform"),LayerMask.NameToLayer("Player"),true);
+			Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("JumpAblePlatform"),gameObject.layer,true);
 			//Physics2D.IgnoreCollision(platform.collider2D, collider2D,true);
 		}
 		else
-			Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("JumpAblePlatform"),LayerMask.NameToLayer("Player"),false);
+			Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("JumpAblePlatform"),gameObject.layer,false);
 		//Physics2D.IgnoreCollision(platform.collider2D, collider2D,false);
 	}
 
 	void ForceJumpAblePlatform()
 	{
 		Debug.Log("Force Jump-Able-Platform");
-		Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("JumpAblePlatform"),LayerMask.NameToLayer("Player"),true);
+		Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("JumpAblePlatform"),gameObject.layer,true);
 	}
 
+	void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+	{
+		if (stream.isWriting)
+		{
+			//Executed on the owner of this PhotonView; 
+			//The server sends it's position over the network
+			
+			stream.SendNext(transform.position);//"Encode" it, and send it
+			
+		}
+		else
+		{
+			//Executed on the others; 
+			//receive a position and set the object to it
+			
+			transform.position = (Vector3)stream.ReceiveNext();
+			
+		}
+	}
+
+	void AnalogStickAndButton () {
+		buttonIsPressed=false;
+		foreach (Touch touch in Input.touches)
+		{
+			if(!buttonIsPressed)
+			{
+				if(touch.position.x > (Screen.width * 0.5f))
+				{
+					buttonTouchID = touch.fingerId;
+					if(buttonTapCount < touch.tapCount) {
+						buttonTapCount = touch.tapCount;
+						buttonIsPressed=true;
+					}
+				}
+			}
+			/*
+			 * Touch nach Touchphase auswerten:
+			 * 	1. Began
+			 *  2. Moved
+			 *  3. Stationary
+			 *  4. Ended
+			 * */
+			switch (touch.phase) {
+				/* 1. */
+			case TouchPhase.Began:
+//				Steuerung reagiert schlecht!
+//
+//				if(touch.position.x > (Screen.width * 0.5f))
+//				{
+//					buttonIsPressed=true;
+//				}
+				if(touch.position.x < (Screen.width * 0.5f))
+				{
+					// Analog Stick gefunden
+					analogStick = touch;
+					analogStickTouchID = touch.fingerId;
+					analogStickTouchBegan=true;
+					
+					//Finger befindet sich in linker bildschirmhälfte?
+					
+					//Screen.width/(2*2*2) = Screen.width*0.125
+					float texturesizeX = analogStickTextureWidth * 0.5f;
+					float texturesizeY = analogStickTextureHeight * 0.5f;
+					float savezoneX = texturesizeX*0.5f;
+					float savezoneY = texturesizeY*0.5f;
+					textureSizeWithSaveZoneX = texturesizeX + savezoneX;
+					textureSizeWithSaveZoneY = texturesizeY + savezoneY;
+					
+					/* X Position checken
+						 * 
+						 * 
+						 * */
+					if((touch.position.x > textureSizeWithSaveZoneX) && (touch.position.x < ((Screen.width*0.5)-textureSizeWithSaveZoneX)))
+					{
+						// X position korrekt (ohne SaveZone)
+						touchBeganPositionX = touch.position.x;
+					}
+					else if(touch.position.x > ((Screen.width*0.5f)-textureSizeWithSaveZoneX))
+					{
+						// zu weit rechts am Rand
+						// X position muss korrigiert werden (ohne SaveZone)
+						touchBeganPositionX = ((Screen.width*0.5f)-textureSizeWithSaveZoneX);
+					}
+					else if(touch.position.x < textureSizeWithSaveZoneX)
+					{
+						// zu weit links am Rand
+						// X position muss korrigiert werden (ohne SaveZone)
+						touchBeganPositionX = textureSizeWithSaveZoneX;
+					}
+					
+					/* Y Position checken
+						 * 
+						 * 
+						 * */
+					if((touch.position.y > textureSizeWithSaveZoneY) && (touch.position.y < (Screen.height)-textureSizeWithSaveZoneY))
+					{
+						// alles perfekt
+						touchBeganPositionY = touch.position.y;
+					}
+					else if(touch.position.y > ((Screen.height)-textureSizeWithSaveZoneY))
+					{
+						// Problem: zu nah am oberen Rand, OFFSET (ohne SaveZone)!
+						touchBeganPositionY = Screen.height-textureSizeWithSaveZoneY;
+					}
+					else if(touch.position.y < textureSizeWithSaveZoneY)
+					{
+						// Problem: zu nah am unteren Rand, OFFSET (ohne SaveZone)!
+						touchBeganPositionY = textureSizeWithSaveZoneY;
+					}
+					
+					
+					//Analogstick um TouchBeganPosition (Mittelpunkt) zeichnen
+					analogStickTexture.pixelInset = new Rect(touchBeganPositionX-analogStickTextureWidth*0.5f,touchBeganPositionY-analogStickTextureHeight*0.5f,analogStickTextureWidth,analogStickTextureHeight);
+					Rect pixelInset = new Rect(touch.position.x-stickTexture.pixelInset.width*0.5f,touch.position.y-stickTexture.pixelInset.height*0.5f,stickTexture.pixelInset.width,stickTexture.pixelInset.height);
+					stickTexture.pixelInset = pixelInset;
+				}
+				break;
+				/* 2. */
+			case TouchPhase.Moved:
+				if(touch.fingerId == analogStickTouchID && analogStickTouchBegan) 			/// needed??
+				{
+					float stickPosX=0;
+					float stickPosY=0;
+					//Analogstick um TouchBeganPosition (Mittelpunkt) zeichnen
+					if(touch.position.x > touchBeganPositionX + analogStickTextureWidth*0.5f)
+						stickPosX=touchBeganPositionX + analogStickTextureWidth*0.5f;
+					
+					else if(touch.position.x < touchBeganPositionX - analogStickTextureWidth*0.5f)
+						stickPosX=touchBeganPositionX - analogStickTextureWidth*0.5f;
+					
+					else
+						stickPosX = touch.position.x;
+					
+					if(touch.position.y > touchBeganPositionY + analogStickTextureHeight*0.5f)
+						stickPosY=touchBeganPositionY + analogStickTextureHeight*0.5f;
+					
+					else if(touch.position.y < touchBeganPositionY - analogStickTextureHeight*0.5f)
+						stickPosY=touchBeganPositionY - analogStickTextureHeight*0.5f;
+					
+					else
+						stickPosY = touch.position.y;
+					
+					Rect pixelInset = new Rect(stickPosX-stickTexture.pixelInset.width*0.5f,stickPosY-stickTexture.pixelInset.height*0.5f,stickTexture.pixelInset.width,stickTexture.pixelInset.height);
+					stickTexture.pixelInset = pixelInset;
+					
+					deltaX = (touch.position.x - touchBeganPositionX)/(analogStickTextureWidth*0.5f);
+					if(deltaX > 1.0f)
+						deltaX = 1.0f;
+					else if(deltaX < -1.0f)
+						deltaX = -1.0f;
+					
+					deltaY = (touch.position.y - touchBeganPositionY)/(analogStickTextureHeight*0.5f);
+					if(deltaY > 1.0f)
+						deltaY = 1.0f;
+					else if(deltaY < -1.0f)
+						deltaY = -1.0f;
+
+				}
+				break;
+				
+				/* 3. */
+			case TouchPhase.Stationary:
+				break;
+				
+				/* 4. */
+			case TouchPhase.Ended:
+				if(touch.fingerId == analogStickTouchID) 
+				{
+					// Analog Stick ausblenden (aus sichtfeld verschieben)
+					analogStickTexture.pixelInset = new Rect(-100,-100,analogStickTexture.pixelInset.width,analogStickTexture.pixelInset.height);
+					stickTexture.pixelInset = new Rect(-100,-100,stickTexture.pixelInset.width,stickTexture.pixelInset.height);
+					
+					// Analog Stick als nicht aktiv setzen
+					analogStickTouchBegan = false;
+					analogStickTouchID = -1;
+				}
+				break;
+			}
+			
+			//	BUGGY!
+			// sollte verhindern das zweiter Finger auf linker hälfte als neuer AnalogStick arbeitet!
+			// zweiter finger sollte ignoriert werden
+			//
+			//			if(analogStickTouchID != -1)
+			//			{
+			//				break;
+			//			}
+		}
+		//kein Button gedrueck, zurücksetzen
+		if(!buttonIsPressed)
+		{
+			buttonTouchID = -1;
+			buttonTapCount = 0;
+		}
+		if (Application.platform == RuntimePlatform.Android)
+		{
+			if (Input.GetKey(KeyCode.Escape))
+			{
+				// Insert Code Here (I.E. Load Scene, Etc)
+				// OR Application.Quit();
+				Application.LoadLevel("MainMenuOld");
+				return;
+			}
+		}
+	}
 }
