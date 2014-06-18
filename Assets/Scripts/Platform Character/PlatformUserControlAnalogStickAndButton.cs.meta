@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 016cebf4d376eb945abf5df39d9c4d8b
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - debugging: {instanceID: 0}
+  - analogStickTexture: {fileID: 13100000, guid: 53f0043440cd65245ad1117ecaca2952,
+      type: 2}
+  - stickTexture: {fileID: 13100000, guid: aaa678f073fd0974295e423cab31ec08, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
