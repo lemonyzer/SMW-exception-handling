@@ -5,6 +5,12 @@ function OnGUI() {
 	
 	if(GUI.Button(new Rect((Screen.width/2)-100,(Screen.height/2)-100,200,50),"Single Player"))
 	{
+		var numberOfAllPlayer = 4;
+		var numberOfAIPlayer = 3;
+		var numberOfUserPlayer = 1;
+		PlayerPrefs.SetInt("NumberOfAllPlayers",numberOfAllPlayer);
+		PlayerPrefs.SetInt("NumberOfAIPlayers",numberOfAIPlayer);
+		PlayerPrefs.SetInt("NumberOfUserPlayers",numberOfUserPlayer);
 		Application.LoadLevel("sp_classic");
 	}
 //	

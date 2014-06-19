@@ -2,7 +2,12 @@ fileFormatVersion: 2
 guid: 414c476738c571549b43298ec58cfd6f
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - powerUpReleaseSound: {fileID: 8300000, guid: 47a4ca43461042248b23ca38c19f4340,
+      type: 3}
+  - powerUpReloadedSound: {fileID: 8300000, guid: ab10a9530fbbc444ab6bda3fb2125484,
+      type: 3}
+  - powerup: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
