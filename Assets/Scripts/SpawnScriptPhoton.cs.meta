@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: abd062a69215e674b84af01e89ae9b63
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - threeSecondsTexture: {fileID: 2800000, guid: 09d5e3bd1f02edb44ac087e03d0702de,
+      type: 3}
+  - twoSecondsTexture: {fileID: 2800000, guid: c2b775a47d9678b4d8876ddcfd84b964, type: 3}
+  - oneSecondsTexture: {fileID: 2800000, guid: d2fe1bf7cb7b64a4cbcbde460ef3c09f, type: 3}
+  - goTexture: {fileID: 2800000, guid: f15b8d5ac06e0e143b18ea57159f6e1c, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
