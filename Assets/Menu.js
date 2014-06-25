@@ -40,7 +40,7 @@ function OnGUI() {
 	}
 	
 	//if(GUI.Button(new Rect((Screen.width*0.5)-100,(Screen.height/2)+20,200,50),"Direct Connection"))
-	if(GUI.Button(new Rect((Screen.width*0.5f),0,Screen.width*0.5f,Screen.height*0.5f),"Direct Connection"))
+	if(GUI.Button(new Rect((Screen.width*0.5f),0,Screen.width*0.5f,Screen.height*0.5f),"Multiplayer"))
 	{
 		numberOfAllPlayer = 4;
 		numberOfAIPlayer = 0;
@@ -48,7 +48,7 @@ function OnGUI() {
 		PlayerPrefs.SetInt("NumberOfAllPlayers",numberOfAllPlayer);
 		PlayerPrefs.SetInt("NumberOfAIPlayers",numberOfAIPlayer);
 		PlayerPrefs.SetInt("NumberOfLocalUserPlayers",numberOfLocalUserPlayer);
-		Application.LoadLevel("mp_DirectConnect");;
+		Application.LoadLevel("mp_Multiplayer");;
 	}
 //	
 //	if(GUI.Button(new Rect((Screen.width*0.5)-100,(Screen.height/2)+80,200,50),"Touch Test"))
